@@ -3,13 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Services\ProductService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Response;
 
 
 Route::get('/', function () {
-    return view('welcome');
-    return 'hello world!';
+    return view('welcome', ['name' => 'pacampara-app']);
 });
 
 Route::get('show-users', [UserController::class, 'show']);
@@ -80,3 +81,19 @@ Route::get('/token', function (Request $request) {
 Route::post('/token', function (Request $request) {
     return $request->all();
 });
+
+//Conyroller
+//Middleware
+Route::get('/users', [UserController::class, 'index'])->middleware('user-middleware');
+
+//Resource
+Route::resource('products', ProductController::class);
+
+//View with data
+Route::get('/product-list', function(ProductService $productService) {
+    $data['products'] = $productService->listProducts();
+    return view('products.list', $data);
+});
+
+// …or in a controller action
+Route::get('/products', [ProductController::class, 'index']);
